@@ -1,0 +1,9 @@
+__pycache__/
+.vs/
+.vscode/
+texts/
+images/
+config.py
+*.pyc
+temp/
+
