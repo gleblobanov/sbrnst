@@ -80,10 +80,89 @@ def get_files(author_id, year):
         cursor.close()
         connection.close()
 
+def get_files_all():
+    try:
+        connection, cursor = db.connect()
+        sql = """\
+            SELECT file.file_id, file_path, author_id, year
+	        FROM file            
+
+	        LEFT JOIN file_author as fa
+		    ON file.file_id = fa.file_id
+
+	        WHERE format in ('PDF', 'DOCX')
+	
+			;"""
+
+        cursor.execute(sql)
+        records = cursor.fetchall()
+
+        filespaths = []
+        
+        for record in records: 
+            filepath = get_file(record[0], record[1])
+            filespaths.append(filepath)
+
+        return filespaths
+    except Exception as error:
+        print(error)
+    finally:
+        cursor.close()
+        connection.close()
+
+def get_files_author(author_id):
+    try:
+        connection, cursor = db.connect()
+        sql = """\
+            SELECT file.file_id, file_path, author_id, year
+	        FROM file            
+
+	        LEFT JOIN file_author as fa
+		    ON file.file_id = fa.file_id
+
+	        WHERE format in ('PDF', 'DOCX')
+		        AND author_id = %s
+	
+	        ORDER BY year
+			
+			;"""
+
+        cursor.execute(sql, [author_id])
+        records = cursor.fetchall()
+
+        filespaths = []
+        
+        for record in records: 
+            filepath = get_file(record[0], record[1])
+            filespaths.append(filepath)
+
+        return filespaths
+    except Exception as error:
+        print(error)
+    finally:
+        cursor.close()
+        connection.close()
+
 def create_corpus(author_id, year):
     filelist = [f for f in os.listdir(config.dirs()["temp_dir"])]
     for f in filelist:
         os.remove(os.path.join(config.dirs()["temp_dir"], f))
     get_files(author_id, year)    
+    newcorpus = PlaintextCorpusReader(config.dirs()["temp_dir"], '.*')
+    return newcorpus
+
+def create_corpus_all():
+    filelist = [f for f in os.listdir(config.dirs()["temp_dir"])]
+    for f in filelist:
+        os.remove(os.path.join(config.dirs()["temp_dir"], f))
+    get_files_all()    
+    newcorpus = PlaintextCorpusReader(config.dirs()["temp_dir"], '.*')
+    return newcorpus
+
+def create_corpus_author(author_id):
+    filelist = [f for f in os.listdir(config.dirs()["temp_dir"])]
+    for f in filelist:
+        os.remove(os.path.join(config.dirs()["temp_dir"], f))
+    get_files_author(author_id)    
     newcorpus = PlaintextCorpusReader(config.dirs()["temp_dir"], '.*')
     return newcorpus

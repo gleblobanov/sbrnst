@@ -2,8 +2,6 @@ import config
 import db
 import os
 
-temp_dir = 'C:\\Workshop\\sbrnst\\temp'
-
 def insert_files():
     files = os.listdir(temp_dir)
     try:
