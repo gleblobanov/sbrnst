@@ -6,20 +6,6 @@ import codecs
 from nltk.corpus.reader.plaintext import PlaintextCorpusReader
 import config
 
-def find_word():
-    try:
-        connection, cursor = db.connect()
-        sql = "SELECT to_tsvector('Я изучаю соборность. Концепт соборности. Сборности.');"
-        cursor.execute(sql)
-        record = cursor.fetchone()
-        print(record)
-    except Exception as error:
-        print(error)
-    finally:
-        cursor.close()
-        connection.close()
-
-
 def get_file(file_id, file_path):
     try:
         connection, cursor = db.connect()
